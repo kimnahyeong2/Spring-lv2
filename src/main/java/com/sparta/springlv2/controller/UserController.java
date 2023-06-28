@@ -5,7 +5,6 @@ import com.sparta.springlv2.entity.User;
 import com.sparta.springlv2.security.UserDetailsImpl;
 import com.sparta.springlv2.service.UserService;
 import com.sparta.springlv2.status.Message;
-import com.sparta.springlv2.status.StatusEnum;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +29,6 @@ public class UserController {
     public ResponseEntity<Message> signup(@RequestBody @Valid UserRequestDto.SignupRequestDto requestDto, BindingResult bindingResult) {
         Message message = new Message();
 
-        log.info(requestDto.getUsername());
-        log.info(requestDto.getPassword());
         // Validation 예외처리
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
         if(fieldErrors.size() > 0) {
@@ -40,15 +37,14 @@ public class UserController {
             }
             message.setStatusCode(404);
             message.setMessage("회원가입에 실패하였습니다");
-            return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<Message>(message, HttpStatus.NOT_FOUND);
         }
 
         User user = userService.signup(requestDto);
 
-        message.setStatusCode(200);
         message.setMessage("회원가입에 성공하였습니다");
 
-        return new ResponseEntity<>(message, HttpStatus.OK);
+        return new ResponseEntity<Message>(message, HttpStatus.OK);
     }
 
     // 회원 관련 정보 받기

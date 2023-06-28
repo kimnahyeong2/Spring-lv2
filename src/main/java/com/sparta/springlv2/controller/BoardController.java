@@ -4,8 +4,10 @@ import com.sparta.springlv2.dto.BoardRequestDto;
 import com.sparta.springlv2.dto.BoardResponseDto;
 import com.sparta.springlv2.security.UserDetailsImpl;
 import com.sparta.springlv2.service.BoardService;
+import com.sparta.springlv2.status.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,7 +49,7 @@ public class BoardController {
     }
 
     @DeleteMapping("/feed/{id}")
-    public boolean deleteMemo(
+    public ResponseEntity<Message> deleteMemo(
             @PathVariable Long id, @RequestBody BoardRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails)
     {
         return boardService.deleteBoard(id, requestDto, userDetails.getUser());

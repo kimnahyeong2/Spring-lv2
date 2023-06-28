@@ -5,9 +5,11 @@ import com.sparta.springlv2.dto.BoardResponseDto;
 import com.sparta.springlv2.entity.Board;
 import com.sparta.springlv2.entity.User;
 import com.sparta.springlv2.repository.BoardRepository;
+import com.sparta.springlv2.status.Message;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -46,13 +48,16 @@ public class BoardService {
         return ResponseEntity.ok().body(new BoardResponseDto.BoardReadResponseDto(board)).getBody();
     }
 
-    public boolean deleteBoard(Long id, BoardRequestDto requestDto, User user){
+    public ResponseEntity<Message> deleteBoard(Long id, BoardRequestDto requestDto, User user){
+        Message message = new Message();
+        
         Board board = findBoard(id);
         if(!Objects.equals(board.getUser().getId(), user.getId())){
             throw new IllegalArgumentException("해당 사용자가 작성한 게시글이 아닙니다.");
         }
         boardRepository.delete(board);
-        return true;
+        message.setMessage("삭제 완료");
+        return new ResponseEntity<Message>(message, HttpStatus.OK);
     }
 
     private Board findBoard(Long id){
