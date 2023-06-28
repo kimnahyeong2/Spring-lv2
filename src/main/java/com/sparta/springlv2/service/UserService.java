@@ -29,15 +29,8 @@ public class UserService {
             throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
 
-        // email 중복확인
-        String email = requestDto.getEmail();
-        Optional<User> checkEmail = userRepository.findByEmail(email);
-        if (checkEmail.isPresent()) {
-            throw new IllegalArgumentException("중복된 Email 입니다.");
-        }
-
         // 사용자 등록
-        User user = new User(username, password, email);
+        User user = new User(username, password);
         userRepository.save(user);
 
         return user;
