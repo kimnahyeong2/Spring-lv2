@@ -3,7 +3,9 @@ package com.sparta.springlv2.service;
 import com.sparta.springlv2.dto.BoardRequestDto;
 import com.sparta.springlv2.dto.BoardResponseDto;
 import com.sparta.springlv2.entity.Board;
+import com.sparta.springlv2.entity.User;
 import com.sparta.springlv2.repository.BoardRepository;
+import com.sparta.springlv2.security.UserDetailsImpl;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Slf4j
@@ -26,12 +27,9 @@ public class BoardService {
         return boardRepository.findAllByOrderByCreatedAtDesc().stream().map(BoardResponseDto.BoardReadResponseDto::new).toList();
     }
 
-    public BoardResponseDto.BoardBasicResponseDto createBoard(BoardRequestDto requestDto) {
-        Board board = new Board(requestDto);
-
-        Board saveBoard = boardRepository.save(board);
-
-        return new BoardResponseDto.BoardBasicResponseDto(saveBoard);
+    public BoardResponseDto.BoardBasicResponseDto createBoard(BoardRequestDto requestDto, User user) {
+        Board board = boardRepository.save(new Board(requestDto, user));
+        return new BoardResponseDto.BoardBasicResponseDto(board);
     }
     public BoardResponseDto.BoardReadResponseDto getSelectBoards(Long id) {
         Board board = findBoard(id);
@@ -41,14 +39,12 @@ public class BoardService {
     @Transactional
     public List<BoardResponseDto.BoardReadResponseDto> updateBoard(Long id, BoardRequestDto requestDto) {
         Board board = findBoard(id);
-        comparePwd(requestDto, board);
         board.update(requestDto);
         return boardRepository.findAllByOrderByCreatedAtDesc().stream().map(BoardResponseDto.BoardReadResponseDto::new).toList();
     }
 
     public boolean deleteBoard(Long id, BoardRequestDto requestDto){
         Board board = findBoard(id);
-        comparePwd(requestDto, board);
         boardRepository.delete(board);
         return true;
     }
@@ -57,12 +53,6 @@ public class BoardService {
         return boardRepository.findById(id).orElseThrow(()->
                 new IllegalArgumentException("존재하지 않습니다")
         );
-    }
-
-    private void comparePwd(BoardRequestDto requestDto, Board board){
-        if(!Objects.equals(board.getPwd(), requestDto.getPwd())){
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
-        }
     }
 
 }

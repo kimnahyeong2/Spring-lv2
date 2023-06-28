@@ -1,6 +1,7 @@
 package com.sparta.springlv2.entity;
 
 import com.sparta.springlv2.dto.BoardRequestDto;
+import com.sparta.springlv2.security.UserDetailsImpl;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,19 +23,20 @@ public class Board extends Timestamped{
     private String username;
     @Column(name = "contents", nullable = false, length = 500)
     private String contents;
-    @Column(name = "pwd", nullable = false, length = 500)
-    private String pwd;
 
-    public Board(BoardRequestDto requestDto){
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    public Board(BoardRequestDto requestDto, User user){
         this.title = requestDto.getTitle();
-        this.username = requestDto.getUsername();
         this.contents = requestDto.getContents();
-        this.pwd = requestDto.getPwd();
+        this.username = user.getUsername();
+        this.user = user;
     }
 
     public void update(BoardRequestDto requestDto){
         this.title = requestDto.getTitle();
-        this.username = requestDto.getUsername();
         this.contents = requestDto.getContents();
     }
 }

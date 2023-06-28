@@ -2,15 +2,17 @@ package com.sparta.springlv2.controller;
 
 import com.sparta.springlv2.dto.BoardRequestDto;
 import com.sparta.springlv2.dto.BoardResponseDto;
+import com.sparta.springlv2.security.UserDetailsImpl;
 import com.sparta.springlv2.service.BoardService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/board")
+@RequestMapping("/api")
 @Slf4j
 
 public class BoardController {
@@ -27,8 +29,8 @@ public class BoardController {
     }
 
     @PostMapping("/feed")
-    public BoardResponseDto.BoardBasicResponseDto createBoard(@RequestBody BoardRequestDto requestDto){
-        return boardService.createBoard(requestDto);
+    public BoardResponseDto.BoardBasicResponseDto createBoard(@RequestBody BoardRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return boardService.createBoard(requestDto, userDetails.getUser());
     }
 
     @GetMapping("/feed/{id}")
@@ -39,7 +41,6 @@ public class BoardController {
 
     @PutMapping("/feed/{id}")
     public List<BoardResponseDto.BoardReadResponseDto> updateBoard(@PathVariable Long id, @RequestBody BoardRequestDto requestDto){
-        log.info("controller : " + requestDto.getPwd());
         return boardService.updateBoard(id, requestDto);
     }
 
