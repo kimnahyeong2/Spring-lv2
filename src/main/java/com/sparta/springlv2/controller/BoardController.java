@@ -40,8 +40,10 @@ public class BoardController {
 
 
     @PutMapping("/feed/{id}")
-    public List<BoardResponseDto.BoardReadResponseDto> updateBoard(@PathVariable Long id, @RequestBody BoardRequestDto requestDto){
-        return boardService.updateBoard(id, requestDto);
+    public BoardResponseDto.BoardReadResponseDto updateBoard(
+            @PathVariable Long id, @RequestBody BoardRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails)
+    {
+        return boardService.updateBoard(id, requestDto, userDetails.getUser());
     }
 
     @DeleteMapping("/feed/{id}")
