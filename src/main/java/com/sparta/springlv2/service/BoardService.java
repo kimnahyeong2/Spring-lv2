@@ -46,8 +46,11 @@ public class BoardService {
         return ResponseEntity.ok().body(new BoardResponseDto.BoardReadResponseDto(board)).getBody();
     }
 
-    public boolean deleteBoard(Long id, BoardRequestDto requestDto){
+    public boolean deleteBoard(Long id, BoardRequestDto requestDto, User user){
         Board board = findBoard(id);
+        if(!Objects.equals(board.getUser().getId(), user.getId())){
+            throw new IllegalArgumentException("해당 사용자가 작성한 게시글이 아닙니다.");
+        }
         boardRepository.delete(board);
         return true;
     }
